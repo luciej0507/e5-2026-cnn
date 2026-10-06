@@ -28,7 +28,5 @@ class Service_Prediction(Connexion):
                 "SELECT predictions.image as image, labels.label as label, predictions.commentaire as commentaire, predictions.modele as modele FROM predictions JOIN labels ON predictions.label = labels.id"
             )
 
-            rows = cursor.fetchall()
-            length = len(rows) - 1
-
-            return [Prediction(**row) for row in rows[:length]]
+            rows = cursor.fetchall()            
+            return [Prediction(**row) for row in rows]
