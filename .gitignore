@@ -6,6 +6,6 @@ __pycache__/
 databases/
 .vscode/
 debug_ticket4.py
-satellite_images/
+satelite_images/
 
 .pytest_cache/
