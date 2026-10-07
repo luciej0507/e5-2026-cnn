@@ -10,3 +10,4 @@ API_BASE_URL = os.getenv(
 API_UPLOAD_URL = f"{API_BASE_URL}/predictions/satellite/"
 API_PREDICTIONS_URL = f"{API_BASE_URL}/predictions/"
 API_URL = API_UPLOAD_URL
+API_METRICS_URL = f"{API_BASE_URL}/metrics"

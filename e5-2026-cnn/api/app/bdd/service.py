@@ -1,5 +1,6 @@
 from app.bdd.connexion import Connexion
 from app.bdd.prediction import Prediction
+from app.metrics import mesurer_bdd, LISTING_MISMATCH
 
 
 class Service_Prediction(Connexion):
@@ -22,11 +23,15 @@ class Service_Prediction(Connexion):
         return prediction
 
     @classmethod
+    @mesurer_bdd("lister_predictions")
     def lister_predictions(cls):
         with cls.ouvrir_connexion() as (_, cursor):
             cursor.execute(
                 "SELECT predictions.image as image, labels.label as label, predictions.commentaire as commentaire, predictions.modele as modele FROM predictions JOIN labels ON predictions.label = labels.id"
             )
-
-            rows = cursor.fetchall()            
-            return [Prediction(**row) for row in rows]
+            rows = cursor.fetchall()  
+                      
+            resultat = [Prediction(**row) for row in rows]
+            if len(resultat) != len(rows):                  # bug du ticket4
+                LISTING_MISMATCH.inc()
+            return resultat
