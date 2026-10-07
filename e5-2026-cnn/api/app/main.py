@@ -21,6 +21,7 @@ async def lifespan(app):
     cnn.get_model()
     yield
 
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(lifespan=lifespan)
 

@@ -1,6 +1,9 @@
 from app.bdd.connexion import Connexion
 from app.bdd.prediction import Prediction
 from app.metrics import mesurer_bdd, LISTING_MISMATCH
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Service_Prediction(Connexion):
@@ -31,7 +34,14 @@ class Service_Prediction(Connexion):
             )
             rows = cursor.fetchall()  
                       
-            resultat = [Prediction(**row) for row in rows]
-            if len(resultat) != len(rows):                  # bug du ticket4
+            resultat = [Prediction(**row) for row in rows]  # bug du ticket4 corrigé
+           
+            if len(resultat) != len(rows):
                 LISTING_MISMATCH.inc()
+                logger.error(
+                    "Incohérence liste prédictions : %d lues en base, %d renvoyées",
+                    len(rows), len(resultat),
+                )
+            else:
+                logger.info("Liste des prédictions OK : %d renvoyée(s)", len(resultat))
             return resultat
