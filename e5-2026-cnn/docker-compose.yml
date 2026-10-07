@@ -13,7 +13,7 @@ services:
       - ./databases:/var/lib/mysql
       - ./data/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -44,7 +44,7 @@ services:
     volumes:
       - ./api/app:/code/app
       - ./api/satelite_images:/code/satelite_images
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+    command: [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80" ]
     depends_on:
       db:
         condition: service_healthy
@@ -61,3 +61,29 @@ services:
     depends_on:
       - web
     restart: always
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus_cnn
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - web
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana_cnn
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
+    depends_on:
+      - prometheus
+    restart: always
+
+volumes:
+  grafana_data:

@@ -1,5 +1,9 @@
 from app.bdd.connexion import Connexion
 from app.bdd.prediction import Prediction
+from app.metrics import mesurer_bdd, LISTING_MISMATCH
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Service_Prediction(Connexion):
@@ -22,13 +26,22 @@ class Service_Prediction(Connexion):
         return prediction
 
     @classmethod
+    @mesurer_bdd("lister_predictions")
     def lister_predictions(cls):
         with cls.ouvrir_connexion() as (_, cursor):
             cursor.execute(
                 "SELECT predictions.image as image, labels.label as label, predictions.commentaire as commentaire, predictions.modele as modele FROM predictions JOIN labels ON predictions.label = labels.id"
             )
-
-            rows = cursor.fetchall()
-            length = len(rows) - 1
-
-            return [Prediction(**row) for row in rows[:length]]
+            rows = cursor.fetchall()  
+                      
+            resultat = [Prediction(**row) for row in rows]  # bug du ticket4 corrigé
+           
+            if len(resultat) != len(rows):
+                LISTING_MISMATCH.inc()
+                logger.error(
+                    "Incohérence liste prédictions : %d lues en base, %d renvoyées",
+                    len(rows), len(resultat),
+                )
+            else:
+                logger.info("Liste des prédictions OK : %d renvoyée(s)", len(resultat))
+            return resultat
