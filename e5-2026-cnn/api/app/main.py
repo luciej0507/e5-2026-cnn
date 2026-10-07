@@ -12,14 +12,24 @@ from app.config import UPLOAD_FOLDER
 from app.bdd.service import Service_Prediction
 from app.bdd.prediction import Prediction
 
+from prometheus_fastapi_instrumentator import Instrumentator
+from app.metrics import PREDICTIONS_TOTAL, PREDICTION_DURATION
+
 @asynccontextmanager
 async def lifespan(app):
     Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
     cnn.get_model()
     yield
 
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(lifespan=lifespan)
+
+# Instrumentation Prometheus : crée l'endpoint /metrics
+Instrumentator(
+    should_group_status_codes=False,
+    excluded_handlers=["/metrics"],
+).instrument(app).expose(app)
 
 
 @app.exception_handler(DatabaseError)
@@ -47,7 +57,9 @@ def upload_image(file: UploadFile = File(...)):
                 image.verify()
         except (UnidentifiedImageError, OSError, SyntaxError, Image.DecompressionBombError) as exc:
             raise HTTPException(status_code=400, detail="Image invalide") from exc
-        label = cnn.predict_image(file_path)
+        with PREDICTION_DURATION.labels("CNN").time():
+            label = cnn.predict_image(file_path)
+        PREDICTIONS_TOTAL.labels(str(label), "CNN").inc()
         prediction = Prediction(image=str(file_path), label=label, commentaire="OK", modele="CNN")
         Service_Prediction.sauvegarder_prediction(prediction)
         return {"prediction": prediction}

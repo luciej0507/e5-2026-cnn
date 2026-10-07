@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+
+databases/
+.vscode/
+debug_ticket4.py
+satelite_images/
+
+.pytest_cache/
