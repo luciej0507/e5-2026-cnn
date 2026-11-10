@@ -61,7 +61,7 @@ return [Prediction(**row) for row in rows]
 | `client/Dockerfile` | Copie de `metrics_utils.py` |
 | `client/requirements.txt` | Ajout de `prometheus-client` |
 | `docker-compose.yml` | Ajout des services `prometheus` et `grafana` |
-| `monitoring/` | *Nouveau* : `prometheus.yml` (configuration de la collecte des métriques) et `grafana/datasource.yml` (source de données Prometheus configurée automatiquement dans Grafana) |
+| `monitoring/` | *Nouveau* : `prometheus.yml` (collecte des métriques), `grafana/datasource.yml` (source Prometheus automatique) et `grafana/dashboards/` (`dashboard.yaml` pour le provisioning, `dashboard_cas_pratique.json` pour le dashboard pré-configuré) |
 ---
 # Cas pratique
 Cas pratique sur une application permettant de classifier des images satellites grâce à un modèle CNN
@@ -147,3 +147,14 @@ python -m streamlit run app.py
 ```
 
 Adapter le port Uvicorn si `API_PORT` a été modifié.
+
+### Accès et visualisation du monitoring (Grafana)
+
+1. Rendez-vous sur http://localhost:3000
+2. Identifiants de première connexion :
+   * Identifiant : `admin`
+   * Mot de passe : `admin`
+   *(Cliquez sur Skip ou définissez un nouveau mot de passe si l'invitation s'affiche)*
+3. Accéder au dashboard :
+   * Dans le menu latéral gauche, cliquez sur Dashboards.
+   * Le dashboard dédié au cas pratique apparait dans la liste (sous le nom *cas pratique*).
