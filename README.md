@@ -63,64 +63,24 @@ return [Prediction(**row) for row in rows]
 | `docker-compose.yml` | Ajout des services `prometheus` et `grafana` |
 | `monitoring/` | *Nouveau* : `prometheus.yml` (configuration de la collecte des métriques) et `grafana/datasource.yml` (source de données Prometheus configurée automatiquement dans Grafana) |
 ---
-# Classification d'images satellites
-Cas pratique sur un CNN
+# Cas pratique
+Cas pratique sur une application permettant de classifier des images satellites grâce à un modèle CNN
 
-## Cas pratique
-C'est un travail individuel qui est attendu de vous. Chaque apprenant devra présenter un rapport personnel, du code personnel et un dashboard personnel. Lisez bien toutes les consignes avant de commencer.
-
-## Compétences visées
+### Compétences visées
 - C.20 : Surveiller une application d’intelligence artificielle
 - C.21 : Résoudre les incidents techniques
 
 Ces deux compétences sont validées par l'épreuve E5.
 
-## Travail à réaliser
-Avant de commencer la résolution du ticket, commencez par lire les attendus du rapport, pour pouvoir relever toutes les informations attendues aux bons moments. 
-
-- Tracez le bug en utilisant les outils de debug et les points d'arrêt.
-- Corrigez le bug et testez la solution.
-- Mettez à jour la branche avec la correction documentée.
-- Ajoutez des contrôles dans le code pour remonter des informations sur le nouveau code.
-- Ajoutez un dashboard pour assurer le suivi de l'application.
-- Une des métriques doit permettre le suivi du modèle.
-- Ajoutez la documentation du dashboard.
-- Redéployez, un merge, la solution sur votre dépôt GitHub.
-- Rédigez votre rapport.
-
-## Rapport
-Le rapport compte entre 2 et 5 pages.
-
-- Présentation de l'application.
-- Présentation de l'incident technique.
-- Présentez le message d'erreur en console et expliquez-le.
-- Expliquez les recherches faites pour résoudre l'incident technique.
-- Expliquez la correction apportée et le test de validation.
-- Expliquez le versionnage de la correction dans Git et le déploiement sur GitHub.
-- Ajoutez la documentation sur le dashboard en expliquant le choix des métriques, le choix de la technologie, la mise à jour des indicateurs et les alertes.
-
-
-## Les tickets d'incident
-Chaque branche représente un ticket d'incident. Il y a 4 branches, donc 4 tickets.
-
-Les tickets sont répartis de la façon suivante : 
-- ticket 1 : Corto Gayet, Khaoula Mili
-- ticket 2 : Carole Novak, Simon Brouard, Nathalie Bediée
-- ticket 3 : Malgorzata Ryczer-Dumas, Tangi le Cadre, Lucas Henneuse 
-- ticket 4 : Lucie Jouan, Hugo Babin, Mathieu Laronce
-
-Vous trouverez toutes les informations du ticket dans le Readme de la branche.
 
 ## Installation
-Merci de ne rien modifier sur ce dépôt.
+### Démarrage avec Docker
 
-1. Faire un fork ou un clone de la branche qui vous intéresse sur votre dépôt GitHub. Créez une branche pour la correction.
-2. Installer Git en local. Récupérer le projet sur votre machine.
-3. Le dossier `tests` contient des images satellite.
-
-## Démarrage avec Docker
-
-Depuis la racine du projet, vérifier les valeurs du fichier `.env`, puis lancer :
+Depuis la racine du projet, créer votre fichier `.env` en copiant le modèle :
+```powershell
+cp .env.example .env
+```
+Aadapter les valeurs et lancer ensuite :
 
 ```powershell
 docker compose up --build -d
@@ -131,9 +91,12 @@ docker compose up --build -d
 | Documentation API | http://localhost:8081/docs |
 | Adminer | http://localhost:8080 |
 | MySQL | localhost:3306 |
+| Prometheus | http://localhost:9090/targets |
+| Grafana | http://localhost:3000 |
+
 
 Dans Adminer, utiliser le serveur `db` et les valeurs `MYSQL_USER`,
-`MYSQL_PASSWORD` et `MYSQL_DATABASE` du `.env`.
+`MYSQL_PASSWORD` et `MYSQL_DATABASE` du `.env` pour accéder à la base de données.
 
 ```powershell
 docker compose logs -f
@@ -145,7 +108,7 @@ Les données MySQL sont conservées dans `databases/`, et les images reçues dan
 création d'une base sur un dossier de données vide. Modifier les identifiants
 dans `.env` ne modifie pas les comptes d'une base déjà initialisée.
 
-## Configuration
+### Configuration
 
 Compose lit automatiquement le `.env` à la racine pour les identifiants et les
 ports publiés. Il transmet à chaque application uniquement les variables dont
@@ -164,7 +127,7 @@ au dossier persistant monté dans le conteneur.
 
 L'API attend que MySQL soit prêt. Après modification des dépendances, relancer `docker compose up --build -d`.
 
-## Lancement Python local
+### Lancement Python local
 
 Avec Python 3.11 et les dépendances installées dans un environnement virtuel,
 lancer MySQL et Adminer avec `docker compose up -d db adminer`, puis :
